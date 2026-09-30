@@ -24,3 +24,17 @@ flutter test integration_test -d <device>     # the fit loop on a real engine
 ```
 
 The integration test proves a 4.4 MB 1080p60 clip comes out under a 1 MB limit.
+
+## Test on your iPhone
+
+On the Mac, with the phone plugged in and unlocked:
+
+```sh
+git clone https://github.com/danieljamesjohnson/make-it-fit.git && cd make-it-fit
+bash tool/iphone.sh
+```
+
+The first run needs a signing team: open `ios/Runner.xcworkspace` in Xcode once, select the
+Runner target, Signing & Capabilities, tick "Automatically manage signing" and choose your
+Apple ID. On the phone, trust the developer profile under Settings > General > VPN & Device
+Management. After that `bash tool/iphone.sh` alone is enough.

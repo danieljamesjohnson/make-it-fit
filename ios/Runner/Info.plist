@@ -66,5 +66,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Make It Fit reads the video you choose so it can make a smaller copy.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Make It Fit can shrink a video you record right now.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Needed only if you record a video with sound inside the app.</string>
 </dict>
 </plist>
