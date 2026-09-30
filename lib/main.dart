@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:compress_video/compress_video.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
@@ -54,7 +53,7 @@ class _FitScreenState extends State<FitScreen> {
   Future<void> _pickVideo() async {
     final XFile? picked = await _picker.pickVideo(source: ImageSource.gallery);
     if (picked == null) return;
-    final int bytes = await File(picked.path).length();
+    final int bytes = await picked.length();
     setState(() {
       _video = picked;
       _videoBytes = bytes;
@@ -76,9 +75,14 @@ class _FitScreenState extends State<FitScreen> {
       _outcome = null;
       _error = null;
     });
+    if (kIsWeb) {
+      await _webPreview(mbToBytes(limitMb));
+      return;
+    }
     final FitRunner runner = FitRunner(
       compressor: _compressor,
       inputPath: video.path,
+      inputBytes: _videoBytes ?? 0,
       limitBytes: mbToBytes(limitMb),
       onProgress: (int attempt, double percent) {
         if (!mounted) return;
@@ -109,6 +113,32 @@ class _FitScreenState extends State<FitScreen> {
     }
   }
 
+  /// The browser has no video encoder: this walks the same states with a pretend pass so the
+  /// flow can be reviewed on the web. The result card says so.
+  Future<void> _webPreview(int limitBytes) async {
+    final int inputBytes = _videoBytes ?? 0;
+    for (int p = 0; p <= 100; p += 4) {
+      await Future<void>.delayed(const Duration(milliseconds: 60));
+      if (!mounted) return;
+      setState(() {
+        _attempt = 1;
+        _progress = p.toDouble();
+      });
+    }
+    if (!mounted) return;
+    final bool already = inputBytes <= limitBytes;
+    setState(() {
+      _outcome = FitOutcome(
+        path: _video!.path,
+        bytes: already ? inputBytes : (limitBytes * 0.84).round(),
+        inputBytes: inputBytes,
+        limitBytes: limitBytes,
+        alreadyFit: already,
+      );
+      _status = FitStatus.done;
+    });
+  }
+
   Future<void> _share() async {
     final FitOutcome? outcome = _outcome;
     if (outcome == null) return;
@@ -135,6 +165,17 @@ class _FitScreenState extends State<FitScreen> {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: <Widget>[
+          if (kIsWeb) ...<Widget>[
+            MaterialBanner(
+              content: const Text(
+                'Web preview: the real compression runs on Android, iOS and macOS. '
+                'Here the Compress step is simulated so the flow can be reviewed.',
+              ),
+              leading: const Icon(Icons.info_outline),
+              actions: const <Widget>[SizedBox.shrink()],
+            ),
+            const SizedBox(height: 16),
+          ],
           Text('1. Size limit', style: text.titleMedium),
           const SizedBox(height: 8),
           TextField(

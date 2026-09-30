@@ -1,6 +1,6 @@
-import 'dart:io';
-
 import 'package:compress_video/compress_video.dart';
+
+import 'fit_files_stub.dart' if (dart.library.io) 'fit_files_io.dart';
 
 /// Size limits people actually hit, in decimal megabytes (1 MB = 1,000,000 bytes, the
 /// unit every mail client and chat app quotes).
@@ -46,14 +46,15 @@ class FitOutcome {
 ///
 /// The plugin's `targetSizeMb` lands within about 15 percent of the request, and hardware
 /// encoders overshoot by a few percent, so a single pass at the limit is not a guarantee.
-/// This asks for the limit minus a headroom, checks the real file size, and if the file is
-/// still over the limit asks again with the target scaled down by the miss, up to
-/// [maxAttempts] passes. Each pass steps the preset down one notch as well, so a very long
-/// clip can still fit by shrinking its frame rather than starving its bitrate.
+/// This asks for the limit minus a headroom, checks the real output size the plugin reports,
+/// and if the file is still over the limit asks again with the target scaled down by the
+/// miss, up to [maxAttempts] passes. Each pass steps the preset down one notch as well, so a
+/// very long clip can still fit by shrinking its frame rather than starving its bitrate.
 class FitRunner {
   FitRunner({
     required this.compressor,
     required this.inputPath,
+    required this.inputBytes,
     required this.limitBytes,
     required this.onProgress,
     this.maxAttempts = 3,
@@ -62,6 +63,7 @@ class FitRunner {
 
   final CompressVideo compressor;
   final String inputPath;
+  final int inputBytes;
   final int limitBytes;
   final void Function(int attempt, double percent) onProgress;
   final int maxAttempts;
@@ -78,7 +80,6 @@ class FitRunner {
   }
 
   Future<FitOutcome> run() async {
-    final int inputBytes = await File(inputPath).length();
     if (inputBytes <= limitBytes) {
       return FitOutcome(
         path: inputPath,
@@ -119,13 +120,13 @@ class FitRunner {
       final CompressResult result = await job.result;
       _current = null;
 
-      final int bytes = await File(result.outputPath).length();
+      final int bytes = result.outputBytes;
       if (bytes < bestBytes) {
-        _deleteQuietly(bestPath);
+        if (bestPath != null) deleteFileQuietly(bestPath);
         bestPath = result.outputPath;
         bestBytes = bytes;
-      } else {
-        _deleteQuietly(result.outputPath);
+      } else if (result.outputPath != inputPath) {
+        deleteFileQuietly(result.outputPath);
       }
       if (bestBytes <= limitBytes) break;
       if (result.usedOriginal) break; // Nothing smaller can be made without upscaling risk.
@@ -141,15 +142,6 @@ class FitRunner {
       limitBytes: limitBytes,
       alreadyFit: false,
     );
-  }
-
-  void _deleteQuietly(String? path) {
-    if (path == null || path == inputPath) return;
-    try {
-      File(path).deleteSync();
-    } on FileSystemException {
-      // A leftover in the cache directory is harmless; the plugin's clearCache sweeps it.
-    }
   }
 }
 

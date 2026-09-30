@@ -29,6 +29,7 @@ void main() {
     final FitRunner runner = FitRunner(
       compressor: CompressVideo(),
       inputPath: input,
+      inputBytes: inputBytes,
       limitBytes: mbToBytes(1),
       onProgress: (int attempt, double percent) {
         if (!passes.contains(attempt)) passes.add(attempt);
@@ -52,6 +53,7 @@ void main() {
     final FitRunner runner = FitRunner(
       compressor: CompressVideo(),
       inputPath: input,
+      inputBytes: inputBytes,
       limitBytes: mbToBytes(25),
       onProgress: (_, _) {},
     );
