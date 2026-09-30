@@ -86,8 +86,6 @@ class VideoHero extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         Text('Choose a video', style: text.titleMedium?.copyWith(fontWeight: FontWeight.w500)),
-        const SizedBox(height: 2),
-        Text('From your library', style: text.bodySmall?.copyWith(color: Paper.faint)),
       ],
     );
   }
@@ -169,8 +167,6 @@ class LimitPicker extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text('Fit under', style: text.bodyMedium?.copyWith(color: Paper.muted)),
-        const SizedBox(height: 10),
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -412,11 +408,6 @@ class ResultPanel extends StatelessWidget {
         : outcome.fits
             ? 'Fits'
             : 'As small as it gets';
-    final String note = outcome.alreadyFit
-        ? 'Under ${formatMb(outcome.limitBytes)} as it is. Nothing to do.'
-        : outcome.fits
-            ? 'Under ${formatMb(outcome.limitBytes)}. Ready to send.'
-            : 'Could not get under ${formatMb(outcome.limitBytes)} and stay watchable.';
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
       decoration: BoxDecoration(
@@ -454,8 +445,6 @@ class ResultPanel extends StatelessWidget {
                     ],
                   ],
                 ),
-                const SizedBox(height: 4),
-                Text(note, style: text.bodySmall?.copyWith(color: Paper.muted, height: 1.4)),
               ],
             ),
           ),

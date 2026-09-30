@@ -6,7 +6,6 @@ void main() {
     await tester.pumpWidget(const MakeItFitApp());
     expect(find.text('Make it fit.'), findsOneWidget);
     expect(find.text('Choose a video'), findsOneWidget);
-    expect(find.text('Fit under'), findsOneWidget);
     expect(find.text('Email'), findsOneWidget);
     expect(find.text('Discord'), findsOneWidget);
     expect(find.text('WhatsApp'), findsOneWidget);

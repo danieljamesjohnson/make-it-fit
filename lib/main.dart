@@ -215,12 +215,7 @@ class _FitScreenState extends State<FitScreen> {
                     height: 1.1,
                   ),
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  'Shrink a video so it sends.',
-                  style: text.bodyLarge?.copyWith(color: Paper.muted),
-                ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 24),
                 VideoHero(
                   video: _video,
                   bytes: _videoBytes,
@@ -261,15 +256,6 @@ class _FitScreenState extends State<FitScreen> {
                     style: text.bodyMedium?.copyWith(color: Paper.danger),
                   ),
                 ],
-                const SizedBox(height: 40),
-                Text(
-                  kIsWeb
-                      ? 'Web preview. Compression is simulated here; on the phone it runs for real, '
-                          'entirely on the device.'
-                      : 'Everything happens on this phone. Your original is never changed.',
-                  textAlign: TextAlign.center,
-                  style: text.bodySmall?.copyWith(color: Paper.faint, height: 1.5),
-                ),
               ],
             ),
           ),
