@@ -1,17 +1,26 @@
-# make_it_fit
+# Make It Fit
 
-A new Flutter project.
+Get a phone video under a size limit and share it. One screen, three steps:
 
-## Getting Started
+1. **Size limit** — type a number of MB, or tap Email 25, Discord 20, WhatsApp 16.
+2. **Video** — pick one with the system picker (no photo-library permission needed).
+3. **Compress** — the app asks the encoder for a bit under the limit, checks the real file
+   size, and tries again smaller if it missed, up to three passes. Then Share.
 
-This project is a starting point for a Flutter application.
+No ads, no account, no network, no sliders. Nothing leaves the phone. The original is never
+touched, and the result is never larger than the original.
 
-A few resources to get you started if this is your first Flutter project:
+Built on [`compress_video`](https://pub.dev/packages/compress_video) (Media3 Transformer on
+Android, AVFoundation on iOS and macOS).
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+![Android screenshot](docs/screenshot-android.png)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Develop
+
+```sh
+flutter run                                   # Android, iOS or macOS
+flutter test                                  # unit + widget tests
+flutter test integration_test -d <device>     # the fit loop on a real engine
+```
+
+The integration test proves a 4.4 MB 1080p60 clip comes out under a 1 MB limit.

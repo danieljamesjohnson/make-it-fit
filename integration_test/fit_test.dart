@@ -3,7 +3,7 @@
 import 'dart:io';
 
 import 'package:compress_video/compress_video.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart' show ByteData, rootBundle;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:make_it_fit/src/fit.dart';
@@ -53,7 +53,7 @@ void main() {
       compressor: CompressVideo(),
       inputPath: input,
       limitBytes: mbToBytes(25),
-      onProgress: (_, __) {},
+      onProgress: (_, _) {},
     );
     final FitOutcome outcome = await runner.run();
     expect(outcome.alreadyFit, isTrue);
